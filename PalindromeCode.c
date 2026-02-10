@@ -2,56 +2,46 @@
 
 #define MOD 998244353
 
-long long power(long long base, long long exp, long long mod) {
-    long long result = 1;
-    base %= mod;
+long long power(long long base, long long exp) {
+    long long res = 1;
+    base %= MOD;
     while (exp > 0) {
-        if (exp % 2 == 1) {
-            result = (result * base) % mod;
-        }
-        base = (base * base) % mod;
+        if (exp % 2 == 1) res = (res * base) % MOD;
+        base = (base * base) % MOD;
         exp /= 2;
     }
-    return result;
+    return res;
 }
 
 int main() {
     int n, k;
-    scanf("%d %d", &n, &k);
-    
-    long long palindrome_count[n + 1];
-    
-    for (int len = 1; len <= n; len++) {
-        int free_positions = (len + 1) / 2;
-        palindrome_count[len] = power(k, free_positions, MOD);
-    }
-    
-    long long prefix_sum[n + 1];
-    prefix_sum[0] = 0;
+    if (scanf("%d %d", &n, &k) != 2) return 0;
+
+    static long long g[100005];
+
     for (int i = 1; i <= n; i++) {
-        prefix_sum[i] = (prefix_sum[i - 1] + palindrome_count[i]) % MOD;
+        g[i] = power(k, (i + 1) / 2);
     }
+
     
-    long long total = 0;
-    
-    for (int len = 1; len <= n; len++) {
-        long long count = palindrome_count[len];
-        
-        long long concat_count = 0;
-        for (int i = 1; i < len; i++) {
-            long long pairs = (palindrome_count[i] * palindrome_count[len - i]) % MOD;
-            concat_count = (concat_count + pairs) % MOD;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 3 * i; j <= n; j += 2 * i) {
+            g[j] = (g[j] - g[i] + MOD) % MOD;
         }
-        
-        
-        long long overcount = ((len - 1) * palindrome_count[len]) % MOD;
-        concat_count = (concat_count - overcount + MOD) % MOD;
-        
-        count = (count + concat_count) % MOD;
-        total = (total + count) % MOD;
     }
+
     
-    printf("%lld\n", total);
-    
+    long long total_ans = 0;
+    for (int d = 1; d <= n; d++) {
+        long long contribution = (1LL * d * g[d]) % MOD;
+        
+        long long count = (n / d + 1) / 2;
+        
+        long long added_value = (contribution * (count % MOD)) % MOD;
+        total_ans = (total_ans + added_value) % MOD;
+    }
+
+    printf("%lld\n", total_ans);
+
     return 0;
 }
