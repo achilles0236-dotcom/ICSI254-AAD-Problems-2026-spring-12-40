@@ -1,0 +1,30 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Install GCC
+      run: sudo apt-get update && sudo apt-get install -y gcc
+    
+    - name: Run tests
+      run: bash test.sh
+    
+    - name: Test summary
+      if: always()
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "All tests passed!"
+        else
+          echo "Some tests failed"
+        fi
