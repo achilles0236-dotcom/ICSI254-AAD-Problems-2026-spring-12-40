@@ -29,7 +29,7 @@ for input in tests/input*.txt; do
     fi
 done
 
-rm palindrome
+rm PalindromeCode
 
 echo ""
 echo "Results: $passed passed, $failed failed"
