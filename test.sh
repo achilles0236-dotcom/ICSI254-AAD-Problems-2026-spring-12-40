@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc -o palindrome palindrome.c -lm
+gcc -o PalindromeCode PalindromeCode.c -lm
 if [ $? -ne 0 ]; then
     echo "Compilation failed"
     exit 1
@@ -15,7 +15,7 @@ for input in tests/input*.txt; do
     
     echo "Running test $num..."
     
-    actual=$(./palindrome < $input)
+    actual=$(./PalindromeCode < $input)
     expected=$(cat $output)
     
     if [ "$actual" == "$expected" ]; then
