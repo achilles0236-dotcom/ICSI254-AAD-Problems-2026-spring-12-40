@@ -34,6 +34,6 @@ rm PalindromeCode
 echo ""
 echo "Results: $passed passed, $failed failed"
 
-if[ $failed -gt 0 ]; then
+if [ $failed -gt 0 ]; then
     exit 1
 fi
