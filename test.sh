@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc -o PalindromeCode PalindromeCode.c -lm
+g++ -O2 -std=c++17 -o PalindromeCode PalindromeCode.cpp
 if [ $? -ne 0 ]; then
     echo "Compilation failed"
     exit 1
@@ -10,13 +10,13 @@ passed=0
 failed=0
 
 for input in tests/input*.txt; do
-    num=$(echo $input | grep -o '[0-9]*')
+    num=$(echo "$input" | grep -o '[0-9]*')
     output="tests/output${num}.txt"
     
     echo "Running test $num..."
     
-    actual=$(./PalindromeCode < $input)
-    expected=$(cat $output)
+    actual=$(./PalindromeCode < "$input")
+    expected=$(cat "$output")
     
     if [ "$actual" == "$expected" ]; then
         echo "✓ Test $num passed"
@@ -34,6 +34,6 @@ rm PalindromeCode
 echo ""
 echo "Results: $passed passed, $failed failed"
 
-if [ $failed -gt 0 ]; then
+if[ $failed -gt 0 ]; then
     exit 1
 fi
