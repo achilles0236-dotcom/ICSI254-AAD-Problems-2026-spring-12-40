@@ -1,7 +1,7 @@
 #!/bin/bash
 
 g++ -O2 -std=c++17 -o PalindromeCode PalindromeCode.cpp
-if [ $? -ne 0 ]; then
+if[ $? -ne 0 ]; then
     echo "Compilation failed"
     exit 1
 fi
