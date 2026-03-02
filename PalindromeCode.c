@@ -1,47 +1,80 @@
-#include <stdio.h>
+#include <iostream>
+#include <vector>
+using namespace std;
 
-#define MOD 998244353
-
-long long power(long long base, long long exp) {
-    long long res = 1;
-    base %= MOD;
-    while (exp > 0) {
-        if (exp % 2 == 1) res = (res * base) % MOD;
-        base = (base * base) % MOD;
-        exp /= 2;
-    }
-    return res;
-}
+static const long long MOD = 998244353LL;
 
 int main() {
-    int n, k;
-    if (scanf("%d %d", &n, &k) != 2) return 0;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-    static long long g[100005];
+    int n;
+    long long k;
+    if (!(cin >> n >> k)) return 0;
 
-    for (int i = 1; i <= n; i++) {
-        g[i] = power(k, (i + 1) / 2);
-    }
-
-    
-    for (int i = 1; i <= n; i++) {
-        for (int j = 3 * i; j <= n; j += 2 * i) {
-            g[j] = (g[j] - g[i] + MOD) % MOD;
+    vector<int> mu(n + 1, 0), primes;
+    vector<char> isComp(n + 1, 0);
+    mu[1] = 1;
+    for (int i = 2; i <= n; ++i) {
+        if (!isComp[i]) {
+            primes.push_back(i);
+            mu[i] = -1;
+        }
+        for (int p : primes) {
+            long long v = 1LL * i * p;
+            if (v > n) break;
+            isComp[(int)v] = 1;
+            if (i % p == 0) {
+                mu[(int)v] = 0;
+                break;
+            }
+            mu[(int)v] = -mu[i];
         }
     }
 
-    
-    long long total_ans = 0;
-    for (int d = 1; d <= n; d++) {
-        long long contribution = (1LL * d * g[d]) % MOD;
-        
-        long long count = (n / d + 1) / 2;
-        
-        long long added_value = (contribution * (count % MOD)) % MOD;
-        total_ans = (total_ans + added_value) % MOD;
+    vector<long long> pw(n + 2, 1);
+    long long km = k % MOD;
+    for (int i = 1; i <= n + 1; ++i) pw[i] = pw[i - 1] * km % MOD;
+
+    const long long inv2 = (MOD + 1) / 2;
+
+    vector<long long> A(n + 1, 0);
+    for (int m = 1; m <= n; ++m) {
+        if (m & 1) {
+            A[m] = pw[(m + 1) / 2];
+        } else {
+            A[m] = pw[m / 2] * ((k + 1) % MOD) % MOD * inv2 % MOD;
+        }
     }
 
-    printf("%lld\n", total_ans);
+    vector<long long> a(n + 1, 0);
+    for (int d = 1; d <= n; ++d) {
+        if (mu[d] == 0) continue;
+        for (int t = 1; d * t <= n; ++t) {
+            int m = d * t;
+            if (mu[d] == 1) a[m] += A[t];
+            else a[m] -= A[t];
+            if (a[m] >= MOD) a[m] -= MOD;
+            if (a[m] < 0) a[m] += MOD;
+        }
+    }
 
+    vector<long long> D(n + 1, 0);
+    for (int d = 1; d <= n; ++d) {
+        long long add = (1LL * d * a[d]) % MOD;
+        if (add == 0) continue;
+        for (int m = d; m <= n; m += d) {
+            D[m] += add;
+            if (D[m] >= MOD) D[m] -= MOD;
+        }
+    }
+
+    long long ans = 0;
+    for (int L = 1; L <= n; ++L) {
+        ans += D[L];
+        if (ans >= MOD) ans -= MOD;
+    }
+
+    cout << ans << '\n';
     return 0;
 }
